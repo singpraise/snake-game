@@ -2,3 +2,13 @@
 __pycache__/
 *.pyc
 .DS_Store
+
+# C backend build outputs
+*.exe
+*.obj
+*.pdb
+*.ilk
+build/
+
+# runtime data
+scores.json

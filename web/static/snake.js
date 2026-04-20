@@ -3,6 +3,10 @@ const ctx = cv.getContext("2d");
 const scoreEl = document.getElementById("score");
 const difficultyEl = document.getElementById("difficulty");
 const restartBtn = document.getElementById("restart");
+const nameEl = document.getElementById("name");
+const submitBtn = document.getElementById("submitScore");
+const msgEl = document.getElementById("msg");
+const leaderboardEl = document.getElementById("leaderboard");
 
 const DIFFICULTIES = {
   easy: { label: "簡單", grid: 18, tickMs: 140 },
@@ -67,13 +71,11 @@ function step() {
   const head = snake[0];
   const next = { x: head.x + dir.x, y: head.y + dir.y };
 
-  // wall hit
   if (next.x < 0 || next.x >= grid || next.y < 0 || next.y >= grid) {
     alive = false;
     return;
   }
 
-  // self hit
   if (snake.some((p) => p.x === next.x && p.y === next.y)) {
     alive = false;
     return;
@@ -81,7 +83,6 @@ function step() {
 
   snake.unshift(next);
 
-  // eat
   if (next.x === food.x && next.y === food.y) {
     score += 10;
     scoreEl.textContent = String(score);
@@ -100,8 +101,6 @@ function drawCell(x, y, color) {
 
 function draw() {
   ctx.clearRect(0, 0, cv.width, cv.height);
-
-  // subtle grid background
   ctx.fillStyle = "#000";
   ctx.fillRect(0, 0, cv.width, cv.height);
 
@@ -129,7 +128,6 @@ function draw() {
 }
 
 function trySetDir(nextDir) {
-  // prevent 180-degree turn
   if (dir.x + nextDir.x === 0 && dir.y + nextDir.y === 0) return;
   dir = nextDir;
 }
@@ -151,5 +149,42 @@ document.addEventListener("keydown", (e) => {
 restartBtn?.addEventListener("click", () => startNewGame());
 difficultyEl?.addEventListener("change", () => setDifficulty(difficultyEl.value));
 
+async function refreshLeaderboard() {
+  try {
+    const res = await fetch("/api/scores");
+    const data = await res.json();
+    const scores = Array.isArray(data?.scores) ? data.scores : [];
+    scores.sort((a, b) => (b.score ?? 0) - (a.score ?? 0));
+    const top = scores.slice(0, 10);
+    leaderboardEl.textContent =
+      top.length === 0
+        ? "Leaderboard: (empty)\n"
+        : "Leaderboard (Top 10)\n\n" +
+          top.map((s, i) => `${String(i + 1).padStart(2, " ")}. ${String(s.name ?? "anon").padEnd(16, " ")}  ${s.score ?? 0}`).join("\n");
+  } catch {
+    leaderboardEl.textContent = "Leaderboard: failed to load\n";
+  }
+}
+
+submitBtn?.addEventListener("click", async () => {
+  const name = (nameEl?.value ?? "").trim() || "anon";
+  msgEl.textContent = "送出中...";
+  try {
+    const res = await fetch("/api/scores", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, score }),
+    });
+    if (!res.ok) throw new Error("bad status");
+    msgEl.textContent = "已送出";
+    await refreshLeaderboard();
+  } catch {
+    msgEl.textContent = "送出失敗";
+  }
+  setTimeout(() => (msgEl.textContent = ""), 1200);
+});
+
 // init
 setDifficulty(difficultyEl?.value ?? "normal");
+refreshLeaderboard();
+
