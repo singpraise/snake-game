@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>貪食蛇 Snake (Flask × C)</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body>
+  <header class="header">
+    <div class="title">貪食蛇 <span class="sub">Snake (Flask × C)</span></div>
+    <div class="desc">
+      以 Python Flask 作為 Web 後端（HTTP 路由與模板渲染），C 語言作為遊戲核心引擎，透過 <code>ctypes</code> 進行語言整合。
+    </div>
+  </header>
+
+  <main class="card">
+    <section class="bar">
+      <div class="score">Score: <span id="score">0</span></div>
+      <label class="field">
+        難度
+        <select id="difficulty">
+          <option value="easy">簡單</option>
+          <option value="normal" selected>普通</option>
+          <option value="hard">困難</option>
+        </select>
+      </label>
+      <button id="restart" type="button">新局</button>
+      <div class="hint">方向鍵 / WASD，Space 暫停</div>
+    </section>
+
+    <section class="stage">
+      <canvas id="cv" width="420" height="420"></canvas>
+      <div class="status" id="status"></div>
+    </section>
+  </main>
+
+  <script src="{{ url_for('static', filename='game.js') }}"></script>
+</body>
+</html>
+

@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Snake (Web JS)</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <header class="header">
+    <div class="title">貪食蛇 <span class="sub">Snake (Web JS)</span></div>
+    <div class="desc">
+      這是可直接用 GitHub Pages 遊玩的純前端版本（HTML/CSS/JS + Canvas）。
+      操作：方向鍵 / WASD，Space 暫停，R 重新開始。
+    </div>
+  </header>
+
+  <main class="card">
+    <section class="bar">
+      <div class="score">Score: <span id="score">0</span></div>
+      <label class="field">
+        難度
+        <select id="difficulty">
+          <option value="easy">簡單</option>
+          <option value="normal" selected>普通</option>
+          <option value="hard">困難</option>
+        </select>
+      </label>
+      <button id="restart" type="button">重新開始 (R)</button>
+      <div class="hint">方向鍵 / WASD，Space 暫停</div>
+    </section>
+
+    <section class="stage">
+      <canvas id="cv" width="420" height="420"></canvas>
+      <div class="status" id="status"></div>
+    </section>
+  </main>
+
+  <script src="./snake.js"></script>
+</body>
+</html>
+
